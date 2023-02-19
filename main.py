@@ -28,6 +28,8 @@ def main():
     glfw.make_context_current(window)
     glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 80)
     glEnable(GL_DEPTH_TEST)
+    glEnable(GL_CULL_FACE)
+    glCullFace(GL_BACK)
 
     # установка функций обработчиков
     keyboard_listener = keyboard.Listener(on_press=OnKeyDown, on_release=OnKeyUp)
