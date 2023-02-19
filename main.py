@@ -1,11 +1,3 @@
-import glfw
-from OpenGL.GL import *
-from OpenGL.GLU import *
-import pyrr
-import glad
-import numpy as np
-from pynput import keyboard
-
 from Controls import *
 from Draw import *
 
