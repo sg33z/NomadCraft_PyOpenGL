@@ -3,6 +3,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import numpy as np
 from pynput import keyboard
+from Draw import MAP,ID
 
 # Зародыши Управления
 
