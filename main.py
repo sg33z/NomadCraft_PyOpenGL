@@ -9,11 +9,6 @@ def OnResize(window, width, height):
     sz = 0.1
     glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 80)
 
-
-
-
-
-
 def main():
     # инициализация GLFW
     if not glfw.init():
