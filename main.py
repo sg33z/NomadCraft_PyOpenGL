@@ -1,5 +1,6 @@
 from Controls import *
 from Draw import *
+import time
 
 def OnResize(window, width, height):
 
@@ -8,7 +9,6 @@ def OnResize(window, width, height):
     k = width / height
     sz = 0.1
     glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 80)
-
 def main():
     # инициализация GLFW
     if not glfw.init():
@@ -40,24 +40,28 @@ def main():
     glfw.set_cursor_pos_callback(window, MouseMove)
     glfw.set_mouse_button_callback(window, MouseClick)
     lastX, lastY = glfw.get_cursor_pos(window)
-
-
-    #Зародиш генерации карты
+    # FPS ept
+    frames = 0
+    start_time = time.time()
+    #Зародыш генерации карты
     BlockStart()
     # основной цикл
     while not glfw.window_should_close(window):
         # обработка событий
         glfw.poll_events()
-        # очистка экрана
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glClearColor(0.678, 0.847, 0.902, 1.0)
 
-        glPushMatrix()
 
-        MoveCam()
-        DrawMAP()
+        DrawMAP(True)
 
-        glPopMatrix()
+        # обновление счетчика FPS
+        frames += 1
+        current_time = time.time()
+        if current_time - start_time >= 1.0:
+            fps = frames / (current_time - start_time)
+            print("FPS: ", fps)
+            frames = 0
+            start_time = current_time
+
         # обновление окна
         glfw.swap_buffers(window)
 
