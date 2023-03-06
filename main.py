@@ -1,6 +1,13 @@
 from Controls import *
 from Draw import *
 import time
+import pycuda.autoinit
+import pycuda.driver as drv
+
+# Выбираем вторую видеокарту (с индексом 1)
+dev = drv.Device(0)
+# Выводим информацию о выбранной видеокарте
+print(dev.get_attributes())
 
 def OnResize(window, width, height):
 

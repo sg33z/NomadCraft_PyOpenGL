@@ -196,7 +196,8 @@ def DrawMAP(mask):
     if mask:
         glDisable(GL_TEXTURE_2D)
 
-
+    if not mask:
+        glColor3f(0, 0, 0)
     glTranslatef(5, 0.5, 5)
     model = OBJ('chr_knight.obj')
     model.render()
