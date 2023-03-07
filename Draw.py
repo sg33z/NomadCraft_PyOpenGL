@@ -15,43 +15,49 @@ def DrawBlockUn(x, y, z, side):
     size = 0.5
 
     glPushMatrix()
-    glColor4ub(255-x, 255-y, 255-z, 255)
+
     glTranslatef(x, y, z)
     glScalef(size,size,size)
     # Отрисовка блока
     glBegin(GL_QUADS)
     # Перед
     if side[0]:
+        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 0)
         glVertex3f(-1, -1, 1)
         glVertex3f(1, -1, 1)
         glVertex3f(1, 1, 1)
         glVertex3f(-1, 1, 1)
     # Зад
     if side[1]:
+        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 1)
         glVertex3f(-1, 1, -1)
         glVertex3f(1, 1, -1)
         glVertex3f(1, -1, -1)
         glVertex3f(-1, -1, -1)
     # Верх
     if side[2]:
+        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 2)
         glVertex3f(-1, 1, -1)
         glVertex3f(-1, 1, 1)
         glVertex3f(1, 1, 1)
         glVertex3f(1, 1, -1)
     # Низ
     if side[3]:
+        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 3)
         glVertex3f(-1, -1, -1)
         glVertex3f(1, -1, -1)
         glVertex3f(1, -1, 1)
         glVertex3f(-1, -1, 1)
     # право
     if side[4]:
+        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 4)
         glVertex3f(1, 1, 1)
         glVertex3f(1, -1, 1)
         glVertex3f(1, -1, -1)
         glVertex3f(1, 1, -1)
     # Лево
     if side[5]:
+        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 5)
         glVertex3f(-1, 1, -1)
         glVertex3f(-1, -1, -1)
         glVertex3f(-1, -1, 1)
@@ -167,9 +173,10 @@ def DrawMAP(mask):
     MoveCam()
 
     if mask:
-        tex = load_texture("block/dirt.png")
+        tex1 = load_texture("block/dirt.png")
+        tex2 = load_texture("block/stone_bricks.png")
         glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, tex)
+        glBindTexture(GL_TEXTURE_2D, tex1)
 
     for x in range(10):
         for y in range(10):
@@ -181,9 +188,8 @@ def DrawMAP(mask):
                             else:
                                 DrawBlockUn(x,y,z,OPT(x, y, z))
     if mask:
-        tex = load_texture("block/stone_bricks.png")
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, tex)
+
+        glBindTexture(GL_TEXTURE_2D, tex2)
     for x in range(10):
         for y in range(10):
             for z in range(10):
@@ -199,14 +205,9 @@ def DrawMAP(mask):
     if not mask:
         glColor3f(0, 0, 0)
     glTranslatef(5, 0.5, 5)
-    model = OBJ('chr_knight.obj')
-    model.render()
+    #model = OBJ('chr_knight.obj')
+    #model.render()
     glPopMatrix()
-
-
-
-
-
 
 # Низшая оптимизация
 def OPT(x,y,z):
