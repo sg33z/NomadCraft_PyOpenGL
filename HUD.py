@@ -7,17 +7,24 @@ def HUD_Show(window):
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    glOrtho(0,width,0,height,-1,1)
+    glOrtho(0,1,0,1,-1,1)
     glMatrixMode(GL_MODELVIEW)
+
+
+    coord_x = 200/width
+    coord_y = 0/height
+
+    size_x = 400/width
+    size_y = 50/height
 
     glLoadIdentity()
     glPushMatrix()
     glBegin(GL_QUADS)
     glColor3f(1, 1, 0)
-    glVertex2f(200, 0)
-    glVertex2f(600, 0)
-    glVertex2f(600, 80)
-    glVertex2f(200, 80)
+    glVertex2f(coord_x, coord_y)
+    glVertex2f((coord_x+size_x), coord_y)
+    glVertex2f((coord_x+size_x), (coord_y+size_y))
+    glVertex2f(coord_x, (coord_y+size_y))
     glEnd()
     glPopMatrix()
 

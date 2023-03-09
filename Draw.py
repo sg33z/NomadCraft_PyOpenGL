@@ -17,6 +17,7 @@ def DrawBlockUn(x, y, z, side):
     glPushMatrix()
 
     glTranslatef(x, y, z)
+
     glScalef(size,size,size)
     # Отрисовка блока
     glBegin(GL_QUADS)
@@ -67,10 +68,14 @@ def DrawBlockUn(x, y, z, side):
     glPopMatrix()
 CubeMap = [-1,-1,1,  1,-1,1,  1,1,1,  -1,1,1]
 CubeVBO =None
-def DrawBlockR(x, y, z, side):
-    global CubeVBO
+tex = []
+def DrawBlockR(x, y, z, side, ID):
+    global CubeVBO,tex
     size = 0.5
     glColor3f(1, 1, 1)
+    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, tex[ID])
+
     #Задать положение блока
     glPushMatrix()
     glTranslatef(x, y, z)
@@ -150,12 +155,18 @@ def DrawBlockR(x, y, z, side):
 
     glEnd()
     glPopMatrix()
+    glDisable(GL_TEXTURE_2D)
 
 
 
 def BlockStart():
-    global MAP,ID,CubeMap
+    global MAP,ID,CubeMap,tex
     CubeVBO = glGenBuffers(1)
+    tex = [load_texture("block/stone_bricks.png"),
+           load_texture("block/dirt.png"),
+           load_texture("block/wood.png"),
+           load_texture("block/oreDiamond.png")]
+
     glBindBuffer(GL_ARRAY_BUFFER,CubeVBO)
     glBufferData(GL_ARRAY_BUFFER, len(CubeMap) * 4, (GLfloat * len(CubeMap))(*CubeMap), GL_STATIC_DRAW)
     glBindBuffer(GL_ARRAY_BUFFER, 0)
@@ -172,12 +183,14 @@ def BlockStart():
         for z in range(10):
             MAP[x, 0, z] = True
             ID[x, 0, z] = 0
-    MAP[2, 1, 2] = True
-    ID[2, 1, 2] = 2
+    from Items import DropItem
+    global woodBlock
+    woodBlock = DropItem(2, 5, 1, 5)
+
+
 
 def DrawMAP(mask):
-    from Init_Window import True_Projection
-    True_Projection()
+    global woodBlock
     if mask:
         glClearColor(0.678, 0.847, 0.902, 1.0)
     else:
@@ -189,36 +202,16 @@ def DrawMAP(mask):
     glPushMatrix()
     MoveCam()
 
-    if mask:
-        tex = load_texture("block/dirt.png")
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, tex)
-
     for x in range(10):
         for y in range(10):
             for z in range(10):
                     if MAP[x,y,z]==True:
-                        if ID[x,y,z]==0:
                             if mask:
-                                DrawBlockR(x,y,z,OPT(x, y, z))
+                                DrawBlockR(x,y,z,OPT(x, y, z),ID[x,y,z])
                             else:
                                 DrawBlockUn(x,y,z,OPT(x, y, z))
-    if mask:
-        tex = load_texture("block/stone_bricks.png")
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, tex)
-    for x in range(10):
-        for y in range(10):
-            for z in range(10):
-                    if MAP[x,y,z]==True:
-                        if ID[x,y,z]==2:
-                            if mask:
-                                DrawBlockR(x, y, z, OPT(x, y, z))
-                            else:
-                                DrawBlockUn(x, y, z, OPT(x, y, z))
-    if mask:
-        glDisable(GL_TEXTURE_2D)
 
+    woodBlock.update()
     #if not mask:
         #glColor3f(0, 0, 0)
     #glTranslatef(5, 0.5, 5)

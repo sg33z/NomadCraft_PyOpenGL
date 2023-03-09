@@ -6,12 +6,13 @@ def OnResize(window, width, height):
 global width, height
 keyboard_listener = None
 
-def True_Projection():
-    global width , height
+def True_Projection(w,h):
+
+
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    k = width / height
+    k = w / h
     sz = 0.1
     glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 80)
     glMatrixMode(GL_MODELVIEW)

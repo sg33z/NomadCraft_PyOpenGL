@@ -182,6 +182,9 @@ def BlockUnCheck(window):
     center_x, center_y = OldMousePos
     clr = [3]
     from Draw import DrawMAP
+    from Init_Window import True_Projection
+    w,h = glfw.get_window_size(window)
+    True_Projection(w, h)
     DrawMAP(False)
     clr = glReadPixels(center_x, center_y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE)
     color = np.frombuffer(clr, dtype=np.uint8)
