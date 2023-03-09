@@ -22,42 +22,42 @@ def DrawBlockUn(x, y, z, side):
     glBegin(GL_QUADS)
     # Перед
     if side[0]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 0)
+        glColor4ub(255 - x, 255 - y, 255 - z, 255-0)
         glVertex3f(-1, -1, 1)
         glVertex3f(1, -1, 1)
         glVertex3f(1, 1, 1)
         glVertex3f(-1, 1, 1)
     # Зад
     if side[1]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 1)
+        glColor4ub(255 - x, 255 - y, 255 - z, 255-1)
         glVertex3f(-1, 1, -1)
         glVertex3f(1, 1, -1)
         glVertex3f(1, -1, -1)
         glVertex3f(-1, -1, -1)
     # Верх
     if side[2]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 2)
+        glColor4ub(255 - x, 255 - y, 255 - z, 255-2)
         glVertex3f(-1, 1, -1)
         glVertex3f(-1, 1, 1)
         glVertex3f(1, 1, 1)
         glVertex3f(1, 1, -1)
     # Низ
     if side[3]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 3)
+        glColor4ub(255 - x, 255 - y, 255 - z, 255-3)
         glVertex3f(-1, -1, -1)
         glVertex3f(1, -1, -1)
         glVertex3f(1, -1, 1)
         glVertex3f(-1, -1, 1)
     # право
     if side[4]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 4)
+        glColor4ub(255 - x, 255 - y, 255 - z, 255-4)
         glVertex3f(1, 1, 1)
         glVertex3f(1, -1, 1)
         glVertex3f(1, -1, -1)
         glVertex3f(1, 1, -1)
     # Лево
     if side[5]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255 - 5)
+        glColor4ub(255 - x, 255 - y, 255 - z, 255-5)
         glVertex3f(-1, 1, -1)
         glVertex3f(-1, -1, -1)
         glVertex3f(-1, -1, 1)
@@ -65,17 +65,29 @@ def DrawBlockUn(x, y, z, side):
     glEnd()
 
     glPopMatrix()
-
+CubeMap = [-1,-1,1,  1,-1,1,  1,1,1,  -1,1,1]
+CubeVBO =None
 def DrawBlockR(x, y, z, side):
+    global CubeVBO
     size = 0.5
     glColor3f(1, 1, 1)
-
+    #Задать положение блока
     glPushMatrix()
     glTranslatef(x, y, z)
     glScalef(size, size, size)
     # Отрисовка блока
-    glBegin(GL_QUADS)
+    '''glEnableClientState(GL_VERTEX_ARRAY)
+
+    glBindBuffer(GL_ARRAY_BUFFER, CubeVBO)
+    glVertexPointer(2,GL_FLOAT,0,0)
+    glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+    glDrawArrays(GL_QUADS,0,24)
+    glDisableClientState(GL_VERTEX_ARRAY)
     # Перед
+
+    '''
+    glBegin(GL_QUADS)
     if side[0]:
         glTexCoord2f(1, 1)
         glVertex3f(-1, -1, 1)
@@ -135,14 +147,18 @@ def DrawBlockR(x, y, z, side):
         glVertex3f(-1, -1, 1)
         glTexCoord2f(0, 0)
         glVertex3f(-1, 1, 1)
-    glEnd()
 
+    glEnd()
     glPopMatrix()
 
 
 
 def BlockStart():
-    global MAP,ID
+    global MAP,ID,CubeMap
+    CubeVBO = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER,CubeVBO)
+    glBufferData(GL_ARRAY_BUFFER, len(CubeMap) * 4, (GLfloat * len(CubeMap))(*CubeMap), GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, 0)
     for x in range(10):
         for y in range(10):
             for z in range(10):
@@ -173,10 +189,9 @@ def DrawMAP(mask):
     MoveCam()
 
     if mask:
-        tex1 = load_texture("block/dirt.png")
-        tex2 = load_texture("block/stone_bricks.png")
+        tex = load_texture("block/dirt.png")
         glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, tex1)
+        glBindTexture(GL_TEXTURE_2D, tex)
 
     for x in range(10):
         for y in range(10):
@@ -188,8 +203,9 @@ def DrawMAP(mask):
                             else:
                                 DrawBlockUn(x,y,z,OPT(x, y, z))
     if mask:
-
-        glBindTexture(GL_TEXTURE_2D, tex2)
+        tex = load_texture("block/stone_bricks.png")
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, tex)
     for x in range(10):
         for y in range(10):
             for z in range(10):
@@ -202,12 +218,17 @@ def DrawMAP(mask):
     if mask:
         glDisable(GL_TEXTURE_2D)
 
-    if not mask:
-        glColor3f(0, 0, 0)
-    glTranslatef(5, 0.5, 5)
+    #if not mask:
+        #glColor3f(0, 0, 0)
+    #glTranslatef(5, 0.5, 5)
     #model = OBJ('chr_knight.obj')
     #model.render()
     glPopMatrix()
+
+
+
+
+
 
 # Низшая оптимизация
 def OPT(x,y,z):

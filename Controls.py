@@ -37,6 +37,7 @@ def OnKeyDown(key):
 
     if key == keyboard.KeyCode.from_char('d') == key:
         GoGo[3] = True
+      
         print('w')
     if key == keyboard.Key.space == key:
         if not Jump and MAP[int(CamPos[0]+0.5), int(CamPos[1]-1), int(CamPos[2]+0.5)]:
@@ -159,22 +160,21 @@ def MouseClick(window, button, action, mods):
                 if s == 2:
                     MAP[int(x), int(y+1), int(z)] = True
                     ID[int(x), int(y+1), int(z)] = 2
-                if s == 3:
+                elif s == 3:
                     MAP[int(x), int(y-1), int(z)] = True
                     ID[int(x), int(y-1), int(z)] = 2
-                if s == 0:
+                elif s == 0:
                     MAP[int(x), int(y), int(z+1)] = True
                     ID[int(x), int(y), int(z+1)] = 2
-                if s == 1:
+                elif s == 1:
                     MAP[int(x), int(y), int(z - 1)] = True
                     ID[int(x), int(y), int(z - 1)] = 2
-                if s == 4:
+                elif s == 4:
                     MAP[int(x+1), int(y), int(z)] = True
                     ID[int(x+1), int(y), int(z)] = 2
-                if s == 5:
+                elif s == 5:
                     MAP[int(x - 1), int(y), int(z)] = True
                     ID[int(x - 1), int(y), int(z)] = 2
-
 
 
 
@@ -195,6 +195,7 @@ def BlockUnCheck(window):
     else:
         return None
 
+# Неработает
 def CHECK(arr, n):
     shape = np.shape(arr)
     return shape[n]
