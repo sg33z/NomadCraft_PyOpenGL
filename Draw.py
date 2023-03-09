@@ -176,7 +176,8 @@ def BlockStart():
     ID[2, 1, 2] = 2
 
 def DrawMAP(mask):
-
+    from Init_Window import True_Projection
+    True_Projection()
     if mask:
         glClearColor(0.678, 0.847, 0.902, 1.0)
     else:

@@ -1,4 +1,5 @@
 from Draw import *
+from HUD import *
 from Init_Window import *
 
 
@@ -11,7 +12,12 @@ while not glfw.window_should_close(window):
     glfw.poll_events()
 
 
+
     DrawMAP(True)
+    HUD_Show(window)
+
+
+
     FPS_count()
 
 

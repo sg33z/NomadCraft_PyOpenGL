@@ -2,14 +2,24 @@ import glfw
 from OpenGL.GL import *
 def OnResize(window, width, height):
     glViewport(0, 0, width, height)
+
+global width, height
+keyboard_listener = None
+
+def True_Projection():
+    global width , height
+
+    glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     k = width / height
     sz = 0.1
     glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 80)
-keyboard_listener = None
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    glEnable(GL_DEPTH_TEST)
 
 def Create_Window():
-    global keyboard_listener
+    global keyboard_listener, width , height
     #Инициализация GLFW
     if not glfw.init():
         return
@@ -52,12 +62,11 @@ def Delete_Window():
     glfw.terminate()
     keyboard_listener.stop()
 
+import time
+start_time = time.time()
+frames = 0
 def FPS_count():
-    import time
-    # Переменные для расчетa FPS
-    frames = 0
-    start_time = time.time()
-
+    global start_time, frames
     # обновление счетчика FPS
     frames += 1
     current_time = time.time()
