@@ -1,196 +1,41 @@
-import glfw
-from PIL import Image
-from OpenGL.GL import *
-import pyrr
-import glad
-import numpy as np
-from objloader import *
+from VarLock import *
 
 
-# Зародыши Отрисовки
-MAP = np.zeros((11,11,11),dtype=bool)
-ID = np.zeros((11,11,11),dtype=int)
+# Отрисовка
 vision = [0,0,0]
-def DrawBlockUn(x, y, z, side):
-    size = 0.5
 
-    glPushMatrix()
-
-    glTranslatef(x, y, z)
-
-    glScalef(size,size,size)
-    # Отрисовка блока
-    glBegin(GL_QUADS)
-    # Перед
-    if side[0]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255-0)
-        glVertex3f(-1, -1, 1)
-        glVertex3f(1, -1, 1)
-        glVertex3f(1, 1, 1)
-        glVertex3f(-1, 1, 1)
-    # Зад
-    if side[1]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255-1)
-        glVertex3f(-1, 1, -1)
-        glVertex3f(1, 1, -1)
-        glVertex3f(1, -1, -1)
-        glVertex3f(-1, -1, -1)
-    # Верх
-    if side[2]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255-2)
-        glVertex3f(-1, 1, -1)
-        glVertex3f(-1, 1, 1)
-        glVertex3f(1, 1, 1)
-        glVertex3f(1, 1, -1)
-    # Низ
-    if side[3]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255-3)
-        glVertex3f(-1, -1, -1)
-        glVertex3f(1, -1, -1)
-        glVertex3f(1, -1, 1)
-        glVertex3f(-1, -1, 1)
-    # право
-    if side[4]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255-4)
-        glVertex3f(1, 1, 1)
-        glVertex3f(1, -1, 1)
-        glVertex3f(1, -1, -1)
-        glVertex3f(1, 1, -1)
-    # Лево
-    if side[5]:
-        glColor4ub(255 - x, 255 - y, 255 - z, 255-5)
-        glVertex3f(-1, 1, -1)
-        glVertex3f(-1, -1, -1)
-        glVertex3f(-1, -1, 1)
-        glVertex3f(-1, 1, 1)
-    glEnd()
-
-    glPopMatrix()
 CubeMap = [-1,-1,1,  1,-1,1,  1,1,1,  -1,1,1]
 CubeVBO =None
-tex = []
-def DrawBlockR(x, y, z, side, ID):
-    global CubeVBO,tex
-    size = 0.5
-    glColor3f(1, 1, 1)
-    glEnable(GL_TEXTURE_2D)
-    glBindTexture(GL_TEXTURE_2D, tex[ID])
-
-    #Задать положение блока
-    glPushMatrix()
-    glTranslatef(x, y, z)
-    glScalef(size, size, size)
-    # Отрисовка блока
-    '''glEnableClientState(GL_VERTEX_ARRAY)
-
-    glBindBuffer(GL_ARRAY_BUFFER, CubeVBO)
-    glVertexPointer(2,GL_FLOAT,0,0)
-    glBindBuffer(GL_ARRAY_BUFFER, 0)
-
-    glDrawArrays(GL_QUADS,0,24)
-    glDisableClientState(GL_VERTEX_ARRAY)
-    # Перед
-
-    '''
-    glBegin(GL_QUADS)
-    if side[0]:
-        glTexCoord2f(1, 1)
-        glVertex3f(-1, -1, 1)
-        glTexCoord2f(0, 1)
-        glVertex3f(1, -1, 1)
-        glTexCoord2f(0, 0)
-        glVertex3f(1, 1, 1)
-        glTexCoord2f(1, 0)
-        glVertex3f(-1, 1, 1)
-    # Зад
-    if side[1]:
-        glTexCoord2f(1, 1)
-        glVertex3f(-1, 1, -1)
-        glTexCoord2f(0, 1)
-        glVertex3f(1, 1, -1)
-        glTexCoord2f(0, 0)
-        glVertex3f(1, -1, -1)
-        glTexCoord2f(1, 0)
-        glVertex3f(-1, -1, -1)
-    # Верх
-    if side[2]:
-        glTexCoord2f(1, 1)
-        glVertex3f(-1, 1, -1)
-        glTexCoord2f(0, 1)
-        glVertex3f(-1, 1, 1)
-        glTexCoord2f(0, 0)
-        glVertex3f(1, 1, 1)
-        glTexCoord2f(1, 0)
-        glVertex3f(1, 1, -1)
-    # Низ
-    if side[3]:
-        glTexCoord2f(1, 1)
-        glVertex3f(-1, -1, -1)
-        glTexCoord2f(0, 1)
-        glVertex3f(1, -1, -1)
-        glTexCoord2f(0, 0)
-        glVertex3f(1, -1, 1)
-        glTexCoord2f(1, 0)
-        glVertex3f(-1, -1, 1)
-    # право
-    if side[4]:
-        glTexCoord2f(1, 0)
-        glVertex3f(1, 1, 1)
-        glTexCoord2f(1, 1)
-        glVertex3f(1, -1, 1)
-        glTexCoord2f(0, 1)
-        glVertex3f(1, -1, -1)
-        glTexCoord2f(0, 0)
-        glVertex3f(1, 1, -1)
-    # Лево
-    if side[5]:
-        glTexCoord2f(1,0)
-        glVertex3f(-1, 1, -1)
-        glTexCoord2f(1, 1)
-        glVertex3f(-1, -1, -1)
-        glTexCoord2f(0, 1)
-        glVertex3f(-1, -1, 1)
-        glTexCoord2f(0, 0)
-        glVertex3f(-1, 1, 1)
-
-    glEnd()
-    glPopMatrix()
-    glDisable(GL_TEXTURE_2D)
-
 
 
 def BlockStart():
-    global MAP,ID,CubeMap,tex
+    global CubeMap,tex
     CubeVBO = glGenBuffers(1)
-    tex = [load_texture("block/stone_bricks.png"),
-           load_texture("block/dirt.png"),
-           load_texture("block/wood.png"),
-           load_texture("block/oreDiamond.png")]
-
     glBindBuffer(GL_ARRAY_BUFFER,CubeVBO)
     glBufferData(GL_ARRAY_BUFFER, len(CubeMap) * 4, (GLfloat * len(CubeMap))(*CubeMap), GL_STATIC_DRAW)
     glBindBuffer(GL_ARRAY_BUFFER, 0)
+    for x in range(11):
+        for y in range(11):
+            for z in range(11):
+                Blocks[x,y,z] = Block(3,x,y,z)
     for x in range(10):
         for y in range(10):
-            for z in range(10):
-                MAP[x, y, z] = False
-                ID[x, y, z] = -1
-    for x in range(10):
-        for y in range(10):
-            MAP[x, y, 0] = True
-            ID[x, y, 0] = 2
+            Blocks[x,y,0].SetHave(2,True)
     for x in range(10):
         for z in range(10):
-            MAP[x, 0, z] = True
-            ID[x, 0, z] = 0
+            Blocks[x, 0, z].SetHave(0,True)
     from Items import DropItem
     global woodBlock
     woodBlock = DropItem(2, 5, 1, 5)
 
 
 
-def DrawMAP(mask):
+def DrawMAP(mask, w,h):
+    from Init_Window import  True_Projection
+    True_Projection(w, h)
+
     global woodBlock
+
     if mask:
         glClearColor(0.678, 0.847, 0.902, 1.0)
     else:
@@ -198,18 +43,16 @@ def DrawMAP(mask):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     from Controls import MoveCam
-
+    BlockStart()
     glPushMatrix()
     MoveCam()
 
     for x in range(10):
         for y in range(10):
             for z in range(10):
-                    if MAP[x,y,z]==True:
-                            if mask:
-                                DrawBlockR(x,y,z,OPT(x, y, z),ID[x,y,z])
-                            else:
-                                DrawBlockUn(x,y,z,OPT(x, y, z))
+                Blocks[x,y,z].draw(mask,Blocks)
+
+
 
     woodBlock.update()
     #if not mask:
@@ -218,46 +61,6 @@ def DrawMAP(mask):
     #model = OBJ('chr_knight.obj')
     #model.render()
     glPopMatrix()
-
-
-
-
-
-
-# Низшая оптимизация
-def OPT(x,y,z):
-    side = [True,True,True,True,True,True]
-    if MAP[x,y+1,z]==True:
-        side[2]=False
-    if MAP[x, y-1, z] == True:
-        side[3]=False
-    if MAP[x, y, z+1] == True:
-        side[0]=False
-    if MAP[x, y, z-1] == True:
-        side[1]=False
-    if MAP[x+1, y, z] == True:
-        side[4]=False
-    if MAP[x-1, y, z] == True:
-        side[5]=False
-    return side
-
-def load_texture(filename):
-    # Загрузить изображение из файла с помощью библиотеки PIL
-    img = Image.open(filename)
-    img_data = img.convert("RGBA").tobytes()
-
-    # Создать объект текстуры в OpenGL
-    tex = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, tex)
-
-    # Настроить параметры текстуры
-    glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-
-    # Загрузить данные изображения в текстуру
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.size[0], img.size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data)
-
-    return tex
 
 #NN
 class OBJ:
@@ -280,3 +83,4 @@ class OBJ:
             for vertex in face:
                 glVertex3fv(self.vertices[vertex])
         glEnd()
+

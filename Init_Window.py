@@ -7,9 +7,6 @@ global width, height
 keyboard_listener = None
 
 def True_Projection(w,h):
-
-
-
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     k = w / h
@@ -44,8 +41,8 @@ def Create_Window():
 
 
     #Обьявление функций обработчиков
-    from Controls import OnKeyDown , OnKeyUp, OnKey, MouseMove, MouseClick, keyboard
-
+    from SurvivalMode import OnKeyDown , OnKeyUp, MouseClick, keyboard
+    from Controls import  OnKey, MouseMove
     keyboard_listener = keyboard.Listener(on_press=OnKeyDown, on_release=OnKeyUp)
     keyboard_listener.start()
 
@@ -54,9 +51,14 @@ def Create_Window():
     glfw.set_cursor_pos_callback(window, MouseMove)
     glfw.set_mouse_button_callback(window, MouseClick)
 
+    from Items import InitTexMass
+    InitTexMass()
     # Зародыш генерации карты
     from Draw import BlockStart
     BlockStart()
+
+
+
     return window
 def Delete_Window():
     global keyboard_listener
