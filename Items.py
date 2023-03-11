@@ -219,7 +219,6 @@ class Block:
         global tex, DestTex
         if self.have:
             self.tex = tex[self.ID]
-
             size = 0.5
             if mask:
                 glColor3f(1, 1, 1)
