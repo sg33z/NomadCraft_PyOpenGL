@@ -1,5 +1,6 @@
 import glfw
 from OpenGL.GL import *
+
 def OnResize(window, width, height):
     glViewport(0, 0, width, height)
 
@@ -40,8 +41,12 @@ def Create_Window():
     glCullFace(GL_BACK)
 
 
+
+    from Items import InitTexMass
+    InitTexMass()
+
     #Обьявление функций обработчиков
-    from SurvivalMode import OnKeyDown , OnKeyUp, MouseClick, keyboard
+    from SurvivalMode import OnKeyDown, OnKeyUp, MouseClick, keyboard
     from Controls import  OnKey, MouseMove
     keyboard_listener = keyboard.Listener(on_press=OnKeyDown, on_release=OnKeyUp)
     keyboard_listener.start()
@@ -51,8 +56,7 @@ def Create_Window():
     glfw.set_cursor_pos_callback(window, MouseMove)
     glfw.set_mouse_button_callback(window, MouseClick)
 
-    from Items import InitTexMass
-    InitTexMass()
+
     # Зародыш генерации карты
     from Draw import BlockStart
     BlockStart()

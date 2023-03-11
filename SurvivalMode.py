@@ -3,10 +3,7 @@ from OpenGL.GL import *
 import numpy as np
 from time import time
 from pynput import keyboard
-from Draw import DrawMAP
-from VarLock import *
-
-
+import Draw
 
 #Параметры камеры
 xCorn = 0
@@ -36,13 +33,13 @@ def OnKeyDown(key):
     if key == keyboard.KeyCode.from_char('d') == key:
         GoGo[3] = True
     if key == keyboard.Key.space == key:
-        if not Jump and Blocks[int(CamPos[0] + 0.5), int(CamPos[1] - 1), int(CamPos[2] + 0.5)].have:
+        if not Jump and Draw.Blocks[int(CamPos[0] + 0.5), int(CamPos[1] - 1), int(CamPos[2] + 0.5)].have:
             Jump = True
             jp = CamPos[1] + 1.2
 
 def onJump():
     global Jump,jp
-    if not Blocks[int(CamPos[0] + 0.5), int(CamPos[1] - 1), int(CamPos[2] + 0.5)].have and not Jump:
+    if not Draw.Blocks[int(CamPos[0] + 0.5), int(CamPos[1] - 1), int(CamPos[2] + 0.5)].have and not Jump:
         CamPos[1] = CamPos[1] - 0.08
     if Jump:
         CamPos[1] = CamPos[1] + 0.08
@@ -69,22 +66,22 @@ def MouseClick(window, button, action, mods):
         print(bPos)
 
         if bPos is not None:
+
             x, y, z,s = bPos
-            Blocks[int(x), int(y + 1), int(z)].SetHave(2, True)
+
             if x < 11 and y < 11 and z < 11:
                 if s == 2:
-                    Blocks[int(x), int(y+1), int(z)].SetHave(2,True)
-
+                    Draw.Blocks[x, y+1, z].SetHave(2,True )
                 elif s == 3:
-                    Blocks[int(x), int(y-1), int(z)].SetHave(2,True)
+                    Draw.Blocks[x, y-1, z].SetHave(2, True)
                 elif s == 0:
-                    Blocks[int(x), int(y), int(z+1)].SetHave(2,True)
+                    Draw.Blocks[x, y, z+1].SetHave(2, True)
                 elif s == 1:
-                    Blocks[int(x), int(y), int(z - 1)].SetHave(2,True)
+                    Draw.Blocks[x, y, z-1].SetHave(2, True)
                 elif s == 4:
-                    Blocks[int(x+1), int(y), int(z)].SetHave(2,True)
+                    Draw.Blocks[x+1, y, z].SetHave(2, True)
                 elif s == 5:
-                    Blocks[int(x - 1), int(y), int(z)].SetHave(2,True)
+                    Draw.Blocks[x-1, y, z].SetHave(2, True)
 
     global start_time, stop_time, timer_enable
     if button == glfw.MOUSE_BUTTON_LEFT:
@@ -95,32 +92,44 @@ def MouseClick(window, button, action, mods):
         if action == glfw.RELEASE:
             timer_enable = False
             stop_time = time()
+            global old
+            i, j, k = old
+            Draw.Blocks[i, j, k].SetDestroy(0)
 
 timer_enable = False
 stop_time= 0
-g=0
+old=[0,0,0]
 def TimerUpdate(window):
-    global start_time,stop_time, timer_enable,g
+
+    global start_time,stop_time, timer_enable,old
     if timer_enable:
-        x, y, z, s = BlockUnCheck(window)
-        if (time() - start_time) >= Blocks[x,y,z].hard/10:
-            g+=1
-            Blocks[x,y,z].SetDestroy(g)
-            print(time() - start_time)
-            print("destroy level = ", Blocks[x,y,z].destroy ,"|", Blocks[x,y,z].hard)
-            start_time=time()
-            if Blocks[x,y,z].destroy >= Blocks[x,y,z].hard:
-                print("сломан")
-                Blocks[x,y,z].SetHave(3,False)
-                Blocks[x,y,z].SetDestroy(0)
-                g=0
+        bPos =BlockUnCheck(window)
+        if bPos is not None:
+            x, y, z, s = bPos
+            pos = [x, y, z]
+            if not pos == old:
+                i,j,k = old
+                Draw.Blocks[i,j,k].SetDestroy(0)
+            if (time() - start_time) >= Draw.Blocks[x, y, z].hard / 10:
+                Draw.Blocks[x, y, z].SetDestroy(Draw.Blocks[x, y, z].destroy+1)
+                old = [x, y, z]
+
+                print(time() - start_time)
+                print("destroy level = ", Draw.Blocks[x, y, z].destroy, "|", Draw.Blocks[x, y, z].hard)
+                start_time = time()
+                if Draw.Blocks[x, y, z].destroy >= Draw.Blocks[x, y, z].hard:
+                    print("сломан")
+                    print(x, "|", y, "|", z)
+                    Draw.Blocks[x, y, z].SetHave(3, False)
+                    Draw.Blocks[x, y, z].SetDestroy(0)
+
                 
 def BlockUnCheck(window):
     #Проверка цвета блока(ака его координаты)
 
     clr = [3]
     w,h = glfw.get_window_size(window)
-    DrawMAP(False,w,h)
+    Draw.DrawMAP(False,w,h)
 
     clr = glReadPixels(w/2, h/2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE)
     color = np.frombuffer(clr, dtype=np.uint8)

@@ -1,6 +1,3 @@
-from Draw import DrawMAP
-from HUD import HUD_Show
-from SurvivalMode import TimerUpdate
 from Init_Window import Create_Window,Delete_Window
 import glfw
 
@@ -10,9 +7,11 @@ w,h=glfw.get_window_size(window)
 
 # основной цикл
 while not glfw.window_should_close(window):
+    from SurvivalMode import TimerUpdate
+    from Draw import DrawMAP
+    from HUD import HUD_Show
 
-    # обработка событий
-    glfw.poll_events()
+
 
     TimerUpdate(window)
 
@@ -24,6 +23,8 @@ while not glfw.window_should_close(window):
 
     #Смена буферов(переход к следующему файлу)
     glfw.swap_buffers(window)
+    # обработка событий
+    glfw.poll_events()
 
 Delete_Window()
 

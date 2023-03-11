@@ -7,27 +7,26 @@ def OnKey(window, key, scancode, action, mods):
 
 def MoveBody():
     global xCorn, yCorn, Corn, S_Mspeed, GoGo
-    from Draw import Blocks
-    if GoGo[0] and not Blocks[int(CamPos[0] + 0.5 + np.sin(-Corn) * -S_Mspeed), int(CamPos[1] - 0.5), int(
+    if GoGo[0] and not Draw.Blocks[int(CamPos[0] + 0.5 + np.sin(-Corn) * -S_Mspeed), int(CamPos[1] - 0.5), int(
             CamPos[2] + 0.5 + np.cos(-Corn) * -S_Mspeed)].have:  # W
 
         CamPos[0] += np.sin(-Corn) * -S_Mspeed
         CamPos[2] += np.cos(-Corn) * -S_Mspeed
 
-    if GoGo[2] and not Blocks[int(CamPos[0] + 0.5 + np.sin(-Corn) * S_Mspeed), int(CamPos[1] - 0.5), int(
+    if GoGo[2] and not Draw.Blocks[int(CamPos[0] + 0.5 + np.sin(-Corn) * S_Mspeed), int(CamPos[1] - 0.5), int(
             CamPos[2] + 0.5 + np.cos(-Corn) * S_Mspeed)].have:  # S
 
         CamPos[0] += np.sin(-Corn) * S_Mspeed
         CamPos[2] += np.cos(-Corn) * S_Mspeed
 
-    if GoGo[1] and not Blocks[int(CamPos[0] + 0.5 + np.sin(-Corn + (np.pi * 0.5)) * S_Mspeed), int(CamPos[1] - 0.5), int(
+    if GoGo[1] and not Draw.Blocks[int(CamPos[0] + 0.5 + np.sin(-Corn + (np.pi * 0.5)) * S_Mspeed), int(CamPos[1] - 0.5), int(
             CamPos[2] + 0.5 + np.sin(-Corn + (np.pi * 0.5)) * S_Mspeed)].have:  # A
 
         Corn += np.pi * 0.5
         CamPos[0] += np.sin(-Corn) * S_Mspeed
         CamPos[2] += np.cos(-Corn) * S_Mspeed
 
-    if GoGo[3] and not Blocks[int(CamPos[0] + 0.5 + np.sin(-Corn - (np.pi * 0.5)) * S_Mspeed), int(CamPos[1] - 0.5), int(
+    if GoGo[3] and not Draw.Blocks[int(CamPos[0] + 0.5 + np.sin(-Corn - (np.pi * 0.5)) * S_Mspeed), int(CamPos[1] - 0.5), int(
             CamPos[2] + 0.5 + np.sin(-Corn - (np.pi * 0.5)) * S_Mspeed)].have:  # D
 
         Corn -= np.pi * 0.5

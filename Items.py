@@ -11,7 +11,8 @@ def load_texture(filename):
     # Создать объект текстуры в OpenGL
     tex = glGenTextures(1)
     glBindTexture(GL_TEXTURE_2D, tex)
-
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
     # Настроить параметры текстуры
     glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
@@ -20,12 +21,20 @@ def load_texture(filename):
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.size[0], img.size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data)
 
     return tex
-tex = []
-DestTex =[]
 def InitTexMass():
     global tex,DestTex
-    for i in range(10):
-        DestTex = [load_texture(f"block/destroy_{i}.png")]
+
+    DestTex=[load_texture("block/destroy_0.png"),
+             load_texture("block/destroy_1.png"),
+             load_texture("block/destroy_2.png"),
+             load_texture("block/destroy_3.png"),
+             load_texture("block/destroy_4.png"),
+             load_texture("block/destroy_5.png"),
+             load_texture("block/destroy_6.png"),
+             load_texture("block/destroy_7.png"),
+             load_texture("block/destroy_8.png"),
+             load_texture("block/destroy_9.png"),]
+
     tex = [ load_texture("block/stone_bricks.png"),
             load_texture("block/dirt.png"),
             load_texture("block/wood.png"),
@@ -35,6 +44,7 @@ def InitTexMass():
 #Класс выпавшего предмета(Зародыш)
 class DropItem:
     def __init__(self, ID, x,y,z):
+        global tex,DestTex
         self.tex = tex[ID]
         self.ID = ID
         self.x,self.y,self.z = x,y,z
@@ -57,7 +67,7 @@ class DropItem:
 #Класс блока
 class Block:
     def __init__(self, ID, x,y,z):
-
+        global tex, DestTex
         self.ID = ID
         self.tex = tex[ID]
         self.x,self.y,self.z = x,y,z
@@ -72,17 +82,17 @@ class Block:
     def Optimization(self,obj):
         #Низшая оптимизация
         side = [True,True,True,True,True,True]
-        if obj[self.x, self.y + 1, self.z] == True:
+        if obj[self.x, self.y + 1, self.z].have == True:
             side[2] = False
-        if obj[self.x, self.y - 1, self.z] == True:
+        if obj[self.x, self.y - 1, self.z].have == True:
             side[3] = False
-        if obj[self.x, self.y, self.z + 1] == True:
+        if obj[self.x, self.y, self.z + 1].have == True:
             side[0] = False
-        if obj[self.x, self.y, self.z - 1] == True:
+        if obj[self.x, self.y, self.z - 1].have == True:
             side[1] = False
-        if obj[self.x + 1, self.y, self.z] == True:
+        if obj[self.x + 1, self.y, self.z].have == True:
             side[4] = False
-        if obj[self.x - 1, self.y, self.z] == True:
+        if obj[self.x - 1, self.y, self.z].have == True:
             side[5] = False
         return side
 
@@ -206,45 +216,21 @@ class Block:
         glDisable(GL_TEXTURE_2D)
 
     def draw(self, mask, obj):
+        global tex, DestTex
         if self.have:
             self.tex = tex[self.ID]
-            if self.destroy !=0:
-                # Активируем текстурный блок 0
-                glActiveTexture(GL_TEXTURE0)
 
-                # Связываем первую текстуру с текстурным блоком 0
-                glBindTexture(GL_TEXTURE_2D, self.tex)
-
-                # Активируем текстурный блок 1
-                glActiveTexture(GL_TEXTURE1)
-
-                # Связываем вторую текстуру с текстурным блоком 1
-                glBindTexture(GL_TEXTURE_2D, DestTex[self.destroy])
-
-                # Объединяем две текстуры в одну
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE)
-                glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE)
-                glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_TEXTURE)
-                glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_PREVIOUS)
-                glTexEnvi(GL_TEXTURE_ENV, GL_SRC2_RGB, GL_TEXTURE)
-                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR)
-                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR)
-                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_ALPHA)
-
-                # Активируем текстурный блок 0
-                glActiveTexture(GL_TEXTURE0)
             size = 0.5
             if mask:
                 glColor3f(1, 1, 1)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                glEnable(GL_BLEND)
                 glEnable(GL_TEXTURE_2D)
-                self.tex = tex[self.ID]
-                glBindTexture(GL_TEXTURE_2D, self.tex)
+                glBindTexture(GL_TEXTURE_2D, tex[self.ID])
+
 
             side = self.Optimization(obj)
+
 
             # Задать положение блока
             glPushMatrix()
@@ -358,13 +344,70 @@ class Block:
                     glVertex3f(-1, -1, -1)
                     glVertex3f(-1, -1, 1)
                     glVertex3f(-1, 1, 1)
+            glEnd()
 
-
-
+            glBindTexture(GL_TEXTURE_2D, tex[3])
+            glBegin(GL_QUADS)
+            if mask:
+                if side[0]:
+                    glTexCoord2f(1, 1)
+                    glVertex3f(-1, -1, 1)
+                    glTexCoord2f(0, 1)
+                    glVertex3f(1, -1, 1)
+                    glTexCoord2f(0, 0)
+                    glVertex3f(1, 1, 1)
+                    glTexCoord2f(1, 0)
+                    glVertex3f(-1, 1, 1)
+                if side[1]:
+                    glTexCoord2f(1, 1)
+                    glVertex3f(-1, 1, -1)
+                    glTexCoord2f(0, 1)
+                    glVertex3f(1, 1, -1)
+                    glTexCoord2f(0, 0)
+                    glVertex3f(1, -1, -1)
+                    glTexCoord2f(1, 0)
+                    glVertex3f(-1, -1, -1)
+                if side[2]:
+                    glTexCoord2f(1, 1)
+                    glVertex3f(-1, 1, -1)
+                    glTexCoord2f(0, 1)
+                    glVertex3f(-1, 1, 1)
+                    glTexCoord2f(0, 0)
+                    glVertex3f(1, 1, 1)
+                    glTexCoord2f(1, 0)
+                    glVertex3f(1, 1, -1)
+                if side[3]:
+                    glTexCoord2f(1, 1)
+                    glVertex3f(-1, -1, -1)
+                    glTexCoord2f(0, 1)
+                    glVertex3f(1, -1, -1)
+                    glTexCoord2f(0, 0)
+                    glVertex3f(1, -1, 1)
+                    glTexCoord2f(1, 0)
+                    glVertex3f(-1, -1, 1)
+                if side[4]:
+                    glTexCoord2f(1, 0)
+                    glVertex3f(1, 1, 1)
+                    glTexCoord2f(1, 1)
+                    glVertex3f(1, -1, 1)
+                    glTexCoord2f(0, 1)
+                    glVertex3f(1, -1, -1)
+                    glTexCoord2f(0, 0)
+                    glVertex3f(1, 1, -1)
+                if side[5]:
+                    glTexCoord2f(1, 0)
+                    glVertex3f(-1, 1, -1)
+                    glTexCoord2f(1, 1)
+                    glVertex3f(-1, -1, -1)
+                    glTexCoord2f(0, 1)
+                    glVertex3f(-1, -1, 1)
+                    glTexCoord2f(0, 0)
+                    glVertex3f(-1, 1, 1)
 
             glEnd()
             glPopMatrix()
             glDisable(GL_TEXTURE_2D)
+            glDisable(GL_BLEND)
 
 
 

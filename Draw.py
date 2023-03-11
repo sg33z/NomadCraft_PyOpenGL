@@ -1,12 +1,19 @@
-from VarLock import *
 
+import glfw
+from OpenGL.GL import *
+import numpy as np
+from Items import Block
 
 # Отрисовка
 vision = [0,0,0]
 
 CubeMap = [-1,-1,1,  1,-1,1,  1,1,1,  -1,1,1]
 CubeVBO =None
-
+Blocks = np.empty((11,11,11),dtype=Block)
+for x in range(11):
+    for y in range(11):
+        for z in range(11):
+            Blocks[x, y, z] = Block(0, x, y, z)
 
 def BlockStart():
     global CubeMap,tex
@@ -14,20 +21,16 @@ def BlockStart():
     glBindBuffer(GL_ARRAY_BUFFER,CubeVBO)
     glBufferData(GL_ARRAY_BUFFER, len(CubeMap) * 4, (GLfloat * len(CubeMap))(*CubeMap), GL_STATIC_DRAW)
     glBindBuffer(GL_ARRAY_BUFFER, 0)
-    for x in range(11):
-        for y in range(11):
-            for z in range(11):
-                Blocks[x,y,z] = Block(3,x,y,z)
+
     for x in range(10):
         for y in range(10):
             Blocks[x,y,0].SetHave(2,True)
     for x in range(10):
         for z in range(10):
-            Blocks[x, 0, z].SetHave(0,True)
+            Blocks[x,0,z].SetHave(0,True)
     from Items import DropItem
     global woodBlock
     woodBlock = DropItem(2, 5, 1, 5)
-
 
 
 def DrawMAP(mask, w,h):
@@ -43,7 +46,6 @@ def DrawMAP(mask, w,h):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     from Controls import MoveCam
-    BlockStart()
     glPushMatrix()
     MoveCam()
 
