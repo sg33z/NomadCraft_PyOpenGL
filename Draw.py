@@ -37,8 +37,6 @@ def DrawMAP(mask, w,h):
     from Init_Window import  True_Projection
     True_Projection(w, h)
 
-    global woodBlock
-
     if mask:
         glClearColor(0.678, 0.847, 0.902, 1.0)
     else:
@@ -52,11 +50,17 @@ def DrawMAP(mask, w,h):
     for x in range(10):
         for y in range(10):
             for z in range(10):
-                Blocks[x,y,z].draw(mask,Blocks)
+                if not Blocks[x,y,z].Clear:
+                    Blocks[x,y,z].draw(mask,Blocks)
 
+    for x in range(10):
+        for y in range(10):
+            for z in range(10):
+                if Blocks[x,y,z].Clear:
+                    Blocks[x,y,z].draw(mask,Blocks)
 
-
-    woodBlock.update()
+    global woodBlock
+    woodBlock.update(mask)
     #if not mask:
         #glColor3f(0, 0, 0)
     #glTranslatef(5, 0.5, 5)

@@ -35,10 +35,12 @@ def InitTexMass():
              load_texture("block/destroy_8.png"),
              load_texture("block/destroy_9.png"),]
 
-    tex = [ load_texture("block/stone_bricks.png"),
-            load_texture("block/dirt.png"),
-            load_texture("block/wood.png"),
-            load_texture("block/oreDiamond.png")]
+    tex = [ load_texture("block/stone_bricks.png"), #0
+            load_texture("block/dirt.png"),         #1
+            load_texture("block/wood.png"),         #2
+            load_texture("block/oreDiamond.png"),   #3
+            load_texture("block/glass.png")         #4
+            ]
 
 
 #Класс выпавшего предмета(Зародыш)
@@ -50,7 +52,8 @@ class DropItem:
         self.x,self.y,self.z = x,y,z
         self.rot = 0
         self.model3d = True
-    def update(self):
+
+    def update(self,mask):
         self.rot += 1
 
         self.y = np.sin(self.rot/20)*0.1
@@ -59,7 +62,7 @@ class DropItem:
         glScalef(0.2,0.2,0.2)
         glRotatef(self.rot, 0, 1, 0)
         if self.model3d:
-            Block(self.ID,0,0,0).Lidraw(True)
+            Block(self.ID,0,0,0).Lidraw(mask)
 
 
         glPopMatrix()
@@ -69,11 +72,16 @@ class Block:
     def __init__(self, ID, x,y,z):
         global tex, DestTex
         self.ID = ID
-        self.tex = tex[ID]
         self.x,self.y,self.z = x,y,z
         self.have = False
         self.hard = 5
         self.destroy = 0
+        if ID > 100:
+            self.Clear = True
+            self.tex = tex[ID-100]
+        else:
+            self.tex = tex[ID]
+            self.Clear = False
     def SetHave(self,ID,have):
         self.ID = ID
         self.have = have
@@ -82,19 +90,36 @@ class Block:
     def Optimization(self,obj):
         #Низшая оптимизация
         side = [True,True,True,True,True,True]
-        if obj[self.x, self.y + 1, self.z].have == True:
-            side[2] = False
-        if obj[self.x, self.y - 1, self.z].have == True:
-            side[3] = False
-        if obj[self.x, self.y, self.z + 1].have == True:
-            side[0] = False
-        if obj[self.x, self.y, self.z - 1].have == True:
-            side[1] = False
-        if obj[self.x + 1, self.y, self.z].have == True:
-            side[4] = False
-        if obj[self.x - 1, self.y, self.z].have == True:
-            side[5] = False
-        return side
+        if self.Clear:
+            if obj[self.x, self.y + 1, self.z].have and obj[self.x, self.y + 1, self.z].Clear:
+                side[2] = False
+            if obj[self.x, self.y - 1, self.z].have and obj[self.x, self.y - 1, self.z].Clear:
+                side[3] = False
+            if obj[self.x, self.y, self.z + 1].have and obj[self.x, self.y, self.z+1].Clear:
+                side[0] = False
+            if obj[self.x, self.y, self.z - 1].have and obj[self.x, self.y, self.z-1].Clear:
+                side[1] = False
+            if obj[self.x + 1, self.y, self.z].have and obj[self.x+1, self.y, self.z].Clear:
+                side[4] = False
+            if obj[self.x - 1, self.y, self.z].have and obj[self.x-1, self.y, self.z].Clear:
+                side[5] = False
+            return side
+        else:
+            if obj[self.x, self.y + 1, self.z].have and not obj[self.x, self.y + 1, self.z].Clear:
+                side[2] = False
+            if obj[self.x, self.y - 1, self.z].have and not obj[self.x, self.y - 1, self.z].Clear:
+                side[3] = False
+            if obj[self.x, self.y, self.z + 1].have and not obj[self.x, self.y, self.z + 1].Clear:
+                side[0] = False
+            if obj[self.x, self.y, self.z - 1].have and not obj[self.x, self.y, self.z - 1].Clear:
+                side[1] = False
+            if obj[self.x + 1, self.y, self.z].have and not obj[self.x + 1, self.y, self.z].Clear:
+                side[4] = False
+            if obj[self.x - 1, self.y, self.z].have and not obj[self.x - 1, self.y, self.z].Clear:
+                side[5] = False
+            return side
+            return side
+
 
     def Lidraw(self,mask):
         size = 0.5
@@ -102,7 +127,8 @@ class Block:
             glColor3f(1, 1, 1)
             glEnable(GL_TEXTURE_2D)
             glBindTexture(GL_TEXTURE_2D, self.tex)
-
+        else:
+            glColor3f(0,0,0)
         # Задать положение блока
         glPushMatrix()
         glTranslatef(self.x, self.y, self.z)
@@ -119,7 +145,6 @@ class Block:
             glTexCoord2f(1, 0)
             glVertex3f(-1, 1, 1)
         else:
-            glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 0)
             glVertex3f(-1, -1, 1)
             glVertex3f(1, -1, 1)
             glVertex3f(1, 1, 1)
@@ -136,7 +161,6 @@ class Block:
             glTexCoord2f(1, 0)
             glVertex3f(-1, -1, -1)
         else:
-            glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 1)
             glVertex3f(-1, 1, -1)
             glVertex3f(1, 1, -1)
             glVertex3f(1, -1, -1)
@@ -153,7 +177,6 @@ class Block:
             glTexCoord2f(1, 0)
             glVertex3f(1, 1, -1)
         else:
-            glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 2)
             glVertex3f(-1, 1, -1)
             glVertex3f(-1, 1, 1)
             glVertex3f(1, 1, 1)
@@ -170,7 +193,6 @@ class Block:
             glTexCoord2f(1, 0)
             glVertex3f(-1, -1, 1)
         else:
-            glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 3)
             glVertex3f(-1, -1, -1)
             glVertex3f(1, -1, -1)
             glVertex3f(1, -1, 1)
@@ -187,7 +209,6 @@ class Block:
             glTexCoord2f(0, 0)
             glVertex3f(1, 1, -1)
         else:
-            glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 4)
             glVertex3f(1, 1, 1)
             glVertex3f(1, -1, 1)
             glVertex3f(1, -1, -1)
@@ -204,7 +225,6 @@ class Block:
             glTexCoord2f(0, 0)
             glVertex3f(-1, 1, 1)
         else:
-            glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 5)
             glVertex3f(-1, 1, -1)
             glVertex3f(-1, -1, -1)
             glVertex3f(-1, -1, 1)
@@ -218,14 +238,18 @@ class Block:
     def draw(self, mask, obj):
         global tex, DestTex
         if self.have:
-            self.tex = tex[self.ID]
+            if self.ID > 100:
+                self.tex = tex[self.ID-100]
+                self.Clear = True
+            else:
+                self.tex = tex[self.ID]
             size = 0.5
             if mask:
                 glColor3f(1, 1, 1)
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 glEnable(GL_BLEND)
                 glEnable(GL_TEXTURE_2D)
-                glBindTexture(GL_TEXTURE_2D, tex[self.ID])
+                glBindTexture(GL_TEXTURE_2D, self.tex)
 
 
             side = self.Optimization(obj)

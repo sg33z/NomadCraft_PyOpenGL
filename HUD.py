@@ -1,6 +1,7 @@
 import glfw
 from OpenGL.GL import *
 
+SetFromHudId = 104
 def HUD_Show(window):
     width, height = glfw.get_window_size(window)
     glDisable(GL_DEPTH_TEST)

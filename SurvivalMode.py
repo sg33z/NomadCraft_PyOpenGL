@@ -68,20 +68,20 @@ def MouseClick(window, button, action, mods):
         if bPos is not None:
 
             x, y, z,s = bPos
-
+            import HUD
             if x < 11 and y < 11 and z < 11:
                 if s == 2:
-                    Draw.Blocks[x, y+1, z].SetHave(2,True )
+                    Draw.Blocks[x, y+1, z].SetHave(HUD.SetFromHudId,True )
                 elif s == 3:
-                    Draw.Blocks[x, y-1, z].SetHave(2, True)
+                    Draw.Blocks[x, y-1, z].SetHave(HUD.SetFromHudId, True)
                 elif s == 0:
-                    Draw.Blocks[x, y, z+1].SetHave(2, True)
+                    Draw.Blocks[x, y, z+1].SetHave(HUD.SetFromHudId, True)
                 elif s == 1:
-                    Draw.Blocks[x, y, z-1].SetHave(2, True)
+                    Draw.Blocks[x, y, z-1].SetHave(HUD.SetFromHudId, True)
                 elif s == 4:
-                    Draw.Blocks[x+1, y, z].SetHave(2, True)
+                    Draw.Blocks[x+1, y, z].SetHave(HUD.SetFromHudId, True)
                 elif s == 5:
-                    Draw.Blocks[x-1, y, z].SetHave(2, True)
+                    Draw.Blocks[x-1, y, z].SetHave(HUD.SetFromHudId, True)
 
     global start_time, stop_time, timer_enable
     if button == glfw.MOUSE_BUTTON_LEFT:
