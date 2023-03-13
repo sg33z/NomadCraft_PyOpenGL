@@ -27,5 +27,8 @@ def HUD_Show(window):
     glVertex2f((coord_x+size_x), (coord_y+size_y))
     glVertex2f(coord_x, (coord_y+size_y))
     glEnd()
+
+
+
     glPopMatrix()
 

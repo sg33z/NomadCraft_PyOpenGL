@@ -5,13 +5,87 @@ import numpy as np
 from PIL import Image
 
 
+vbo = []
+vbotex = []
+# вершинные координаты
+FrontVBO = np.array([
+    -1, -1, 1,
+     1, -1, 1,
+     1,  1, 1,
+     -1,  1, 1
+], dtype=np.float32)
+
+BackVBO = np.array([
+    -1, 1, -1,
+     1, 1, -1,
+     1,  -1, -1,
+     -1,  -1, -1
+], dtype=np.float32)
+
+TopVBO = np.array([
+    -1, 1, -1,
+     -1, 1, 1,
+     1,  1, 1,
+     1,  1, -1
+], dtype=np.float32)
+
+BottomVBO = np.array([
+    -1, -1, -1,
+     1, -1, -1,
+     1,  -1, 1,
+     -1,  -1, 1
+], dtype=np.float32)
+
+RightVBO = np.array([
+    1, 1, 1,
+     1, -1, 1,
+     1,  -1, -1,
+     1,  1, -1
+], dtype=np.float32)
+
+LeftVBO = np.array([
+    -1, 1, -1,
+     -1, -1, -1,
+     -1,  -1, 1,
+     -1,  1, 1
+], dtype=np.float32)
 
 
-vertices = np.array([-0.5, -0.5, 0.0,
-                         0.5, -0.5, 0.0,
-                         0.0,  0.5, 0.0], dtype=np.float32)
+# текстурные координаты ---------------
+FrontTexCoord = np.array([
+    0, 1,
+    1, 1,
+    1, 0,
+    0,0
+], dtype=np.float32)
 
+BackTexCoord = np.array([
+    1, 0,
+    0, 0,
+    0, 1,
+    1, 1
+], dtype=np.float32)
 
+TopTexCoord = np.array([
+    0, 0,
+    0, 1,
+    1, 1,
+    1, 0
+], dtype=np.float32)
+
+RightTexCoord = np.array([
+    0, 0,
+    0, 1,
+    1, 1,
+    1, 0
+], dtype=np.float32)
+
+LeftTexCoord = np.array([
+    0, 0,
+    0, 1,
+    1, 1,
+    1, 0
+], dtype=np.float32)
 def load_texture(filename):
     # Загрузить изображение из файла с помощью библиотеки PIL
     img = Image.open(filename)
@@ -52,10 +126,35 @@ def InitItems():
             load_texture("block/glass.png")         #4
             ]
     # C
-    global vbo, vertices
-    vbo = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+    global vbo, vboTex , TopVBO,BottomVBO,LeftVBO,RightVBO,FrontVBO,BackVBO
+    global TopTexCoord,BottomTexCoord , LeftTexCoord, RightTexCoord,FrontTexCoord, BackTexCoord
+    vbo = glGenBuffers(6)
+    vboTex = glGenBuffers(6)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0])
+    glBufferData(GL_ARRAY_BUFFER, FrontVBO.nbytes, FrontVBO, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
+    glBufferData(GL_ARRAY_BUFFER, BackVBO.nbytes, BackVBO, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[2])
+    glBufferData(GL_ARRAY_BUFFER, TopVBO.nbytes, TopVBO, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[3])
+    glBufferData(GL_ARRAY_BUFFER, BottomVBO.nbytes, BottomVBO, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[4])
+    glBufferData(GL_ARRAY_BUFFER, RightVBO.nbytes, RightVBO, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[5])
+    glBufferData(GL_ARRAY_BUFFER, LeftVBO.nbytes, LeftVBO, GL_STATIC_DRAW)
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboTex[0])
+    glBufferData(GL_ARRAY_BUFFER, FrontTexCoord.nbytes, FrontTexCoord, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vboTex[1])
+    glBufferData(GL_ARRAY_BUFFER, BackTexCoord.nbytes, BackTexCoord, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vboTex[2])
+    glBufferData(GL_ARRAY_BUFFER, TopTexCoord.nbytes, TopTexCoord, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vboTex[3])
+    glBufferData(GL_ARRAY_BUFFER, TopTexCoord.nbytes, TopTexCoord, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vboTex[4])
+    glBufferData(GL_ARRAY_BUFFER, RightTexCoord.nbytes, RightTexCoord, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, vboTex[5])
+    glBufferData(GL_ARRAY_BUFFER, LeftTexCoord.nbytes, LeftTexCoord, GL_STATIC_DRAW)
 
 
 
@@ -251,15 +350,36 @@ class Block:
         glPopMatrix()
         glDisable(GL_TEXTURE_2D)
 
-    def VBOdraw(self):
-        global vbo
+    def VBOdraw(self,mask,obj):
+        global vbo, vbotex
+        size =0.5
+        #NN
         glEnableClientState(GL_VERTEX_ARRAY)
-        glBindBuffer(GL_ARRAY_BUFFER, vbo)
-        glVertexPointer(3, GL_FLOAT, 0, None)
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+
+        if mask:
+            glEnable(GL_TEXTURE_2D)
+            glBindTexture(GL_TEXTURE_2D, tex[3])
+
+        side = self.Optimization(obj)
+        # Задать положение блока
+        glPushMatrix()
+        glTranslatef(self.x, self.y, self.z)
+        glScalef(size, size, size)
+        for i in range(6):
+            if side[i]:
+                if mask:
+                    glBindBuffer(GL_ARRAY_BUFFER, vboTex[i])
+                    glTexCoordPointer(2, GL_FLOAT, 0, None)
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[i])
+                glVertexPointer(3, GL_FLOAT, 0, None)
+                glDrawArrays(GL_QUADS, 0, 4)
 
 
-        glDrawArrays(GL_TRIANGLES, 0, 3)
         glDisableClientState(GL_VERTEX_ARRAY)
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY)
+        glDisable(GL_TEXTURE_2D)
+        glPopMatrix()
 
 
 
@@ -285,13 +405,6 @@ class Block:
 
             side = self.Optimization(obj)
 
-
-
-
-
-
-
-            # Задать положение блока
             glPushMatrix()
             glTranslatef(self.x, self.y, self.z)
             glScalef(size, size, size)
