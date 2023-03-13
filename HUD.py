@@ -10,8 +10,6 @@ def HUD_Show(window):
 
     glLoadIdentity()
     glViewport(0, 0, width, height)
-    k = width/height
-    glOrtho(-k, k, -1, 1, -1, 1)
     d = height/width
     glOrtho(-d, d, -1, 1, -1, 1)
     glMatrixMode(GL_MODELVIEW)
@@ -32,16 +30,6 @@ def HUD_Show(window):
     glVertex2f(0.7, -0.7)
     glVertex2f(0.7, -1)
     glEnd()
-    for i in range(9):
-        glBegin(GL_QUADS)
-        glColor3f(0,1,0)
-
-        glVertex2f(x*(i),-1)
-        glVertex2f(x*(i),-0.7)
-        glVertex2f(x*(i),-0.7)
-        glVertex2f(x*(i),-1)
-        glEnd()
-
 
 
 
