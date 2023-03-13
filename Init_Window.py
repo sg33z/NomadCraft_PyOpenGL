@@ -37,8 +37,8 @@ def Create_Window():
     glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 80)
 
     glEnable(GL_DEPTH_TEST)
-  #  glEnable(GL_CULL_FACE)
-    #ssssglCullFace(GL_BACK)
+    glEnable(GL_CULL_FACE)
+    glCullFace(GL_BACK)
 
 
 
@@ -68,6 +68,7 @@ def Delete_Window():
     global keyboard_listener
     glfw.terminate()
     keyboard_listener.stop()
+
 
 import time
 start_time = time.time()
