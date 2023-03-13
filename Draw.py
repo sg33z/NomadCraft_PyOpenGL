@@ -63,9 +63,15 @@ def DrawMAP(mask, w,h):
     woodBlock.update(mask)
     #if not mask:
         #glColor3f(0, 0, 0)
-    #glTranslatef(5, 0.5, 5)
+    glTranslatef(5, 0.5, 5)
     #model = OBJ('chr_knight.obj')
     #model.render()
+
+
+    bl = Block(2, 5,1,5)
+    bl.VBOdraw()
+
+
     glPopMatrix()
 
 #NN

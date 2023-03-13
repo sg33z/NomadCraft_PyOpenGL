@@ -1,8 +1,10 @@
 import glfw
+
 from OpenGL.GL import *
 import numpy as np
 from PIL import Image
-
+vertexp = np.array([0,0,  0,1,  1,0],dtype = float)
+colorp = np.array([1,0,0, 0,1,0,0,0,1],dtype=float)
 def load_texture(filename):
     # Загрузить изображение из файла с помощью библиотеки PIL
     img = Image.open(filename)
@@ -21,9 +23,19 @@ def load_texture(filename):
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.size[0], img.size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data)
 
     return tex
-def InitTexMass():
-    global tex,DestTex
+def InitItems():
+    global tex,DestTex,VBOid,COLORid
 
+    VBOid = glGenBuffers(1)
+    COLORid = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER,VBOid)
+    glBufferData(GL_ARRAY_BUFFER, len(vertexp),vertexp,GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER,0)
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, COLORid)
+    glBufferData(GL_ARRAY_BUFFER, len(colorp), colorp, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, 0)
     DestTex=[load_texture("block/destroy_0.png"),
              load_texture("block/destroy_1.png"),
              load_texture("block/destroy_2.png"),
@@ -235,6 +247,32 @@ class Block:
         glPopMatrix()
         glDisable(GL_TEXTURE_2D)
 
+    def VBOdraw(self):
+        global VBOid,COLORid
+        glBindBuffer(GL_ARRAY_BUFFER,VBOid)
+        glVertexPointer(2,GL_FLOAT,0,None)
+        glBindBuffer(GL_ARRAY_BUFFER,0)
+
+        glBindBuffer(GL_ARRAY_BUFFER, COLORid)
+        glColorPointer(3, GL_FLOAT, 0, None)
+        glBindBuffer(GL_ARRAY_BUFFER,0)
+
+
+
+
+        glVertexPointer(2, GL_FLOAT, 0, None)
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glEnableClientState(GL_COLOR_ARRAY)
+        glDrawArrays(GL_TRIANGLES, 0, 3)
+        glDisableClientState(GL_VERTEX_ARRAY)
+        glDisableClientState(GL_COLOR_ARRAY)
+
+
+
+
+
+
+
     def draw(self, mask, obj):
         global tex, DestTex
         if self.have:
@@ -253,6 +291,11 @@ class Block:
 
 
             side = self.Optimization(obj)
+
+
+
+
+
 
 
             # Задать положение блока

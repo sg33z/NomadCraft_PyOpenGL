@@ -42,8 +42,8 @@ def Create_Window():
 
 
 
-    from Items import InitTexMass
-    InitTexMass()
+    from Items import InitItems
+    InitItems()
 
     #Обьявление функций обработчиков
     from SurvivalMode import OnKeyDown, OnKeyUp, MouseClick, keyboard
