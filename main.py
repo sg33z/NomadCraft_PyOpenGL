@@ -27,5 +27,3 @@ while not glfw.window_should_close(window):
     glfw.poll_events()
 
 Delete_Window()
-
-

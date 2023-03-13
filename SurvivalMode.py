@@ -9,7 +9,7 @@ import Draw
 xCorn = 0
 yCorn = 0
 Corn = 0
-S_Mspeed = 0.05
+S_Mspeed = 0.12
 GoGo = [False, False, False, False]
 CamPos = [3, 2.1, 3]
 
@@ -40,9 +40,9 @@ def OnKeyDown(key):
 def onJump():
     global Jump,jp
     if not Draw.Blocks[int(CamPos[0] + 0.5), int(CamPos[1] - 1), int(CamPos[2] + 0.5)].have and not Jump:
-        CamPos[1] = CamPos[1] - 0.08
+        CamPos[1] = CamPos[1] - 0.15
     if Jump:
-        CamPos[1] = CamPos[1] + 0.08
+        CamPos[1] = CamPos[1] + 0.18
         if CamPos[1] > jp:
             Jump = False
 
@@ -110,7 +110,7 @@ def TimerUpdate(window):
             if not pos == old:
                 i,j,k = old
                 Draw.Blocks[i,j,k].SetDestroy(0)
-            if (time() - start_time) >= Draw.Blocks[x, y, z].hard / 10:
+            if (time() - start_time) >= Draw.Blocks[x, y, z].hard / 100:
                 Draw.Blocks[x, y, z].SetDestroy(Draw.Blocks[x, y, z].destroy+1)
                 old = [x, y, z]
 
