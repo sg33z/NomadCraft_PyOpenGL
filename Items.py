@@ -7,9 +7,20 @@ from PIL import Image
 
 
 
-vertices = np.array([-0.5, -0.5, 0.0,
-                         0.5, -0.5, 0.0,
-                         0.0,  0.5, 0.0], dtype=np.float32)
+vertexp = np.array([0,0,  0,1,  1,0],dtype = float)
+colorp = np.array([1,0,0, 0,1,0,0,0,1],dtype=float)
+
+
+def creatVBO():
+    #C
+    global VBOid,vertexp
+
+    VBOid = glGenBuffers(1)
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBOid)
+    glBufferData(GL_ARRAY_BUFFER,6, vertexp,GL_DYNAMIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, 0)
+    return VBOid
 
 
 def load_texture(filename):
@@ -31,7 +42,9 @@ def load_texture(filename):
 
     return tex
 def InitItems():
-    global tex,DestTex
+    global tex,DestTex,VBOid,COLORid
+    VBO_cube = creatVBO()
+
 
 
     DestTex=[load_texture("block/destroy_0.png"),
@@ -51,12 +64,6 @@ def InitItems():
             load_texture("block/oreDiamond.png"),   #3
             load_texture("block/glass.png")         #4
             ]
-    # C
-    global vbo, vertices
-    vbo = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
-
 
 
 #Класс выпавшего предмета(Зародыш)
@@ -133,7 +140,7 @@ class Block:
                 side[4] = False
             if obj[self.x - 1, self.y, self.z].have and not obj[self.x - 1, self.y, self.z].Clear:
                 side[5] = False
-
+            return side
             return side
 
 
@@ -252,13 +259,16 @@ class Block:
         glDisable(GL_TEXTURE_2D)
 
     def VBOdraw(self):
-        global vbo
+        global VBOid,COLORid
         glEnableClientState(GL_VERTEX_ARRAY)
-        glBindBuffer(GL_ARRAY_BUFFER, vbo)
-        glVertexPointer(3, GL_FLOAT, 0, None)
-
-
-        glDrawArrays(GL_TRIANGLES, 0, 3)
+        glBindBuffer(GL_ARRAY_BUFFER,VBOid)
+        glVertexPointer(3,GL_FLOAT,0,None)
+        glPushMatrix()
+        glColor3f(1,0.3,1)
+        glTranslatef(self.x,self.y,self.z)
+        glDrawArrays(GL_TRIANGLES,0,6)
+        glPopMatrix()
+        glBindBuffer(GL_ARRAY_BUFFER,0)
         glDisableClientState(GL_VERTEX_ARRAY)
 
 
