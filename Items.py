@@ -3,8 +3,26 @@ import glfw
 from OpenGL.GL import *
 import numpy as np
 from PIL import Image
+
+
+
+
 vertexp = np.array([0,0,  0,1,  1,0],dtype = float)
 colorp = np.array([1,0,0, 0,1,0,0,0,1],dtype=float)
+
+
+def creatVBO():
+    #C
+    global VBOid,vertexp
+
+    VBOid = glGenBuffers(1)
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBOid)
+    glBufferData(GL_ARRAY_BUFFER,6, vertexp,GL_DYNAMIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, 0)
+    return VBOid
+
+
 def load_texture(filename):
     # Загрузить изображение из файла с помощью библиотеки PIL
     img = Image.open(filename)
@@ -25,17 +43,10 @@ def load_texture(filename):
     return tex
 def InitItems():
     global tex,DestTex,VBOid,COLORid
-
-    VBOid = glGenBuffers(1)
-    COLORid = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER,VBOid)
-    glBufferData(GL_ARRAY_BUFFER, len(vertexp),vertexp,GL_STATIC_DRAW)
-    glBindBuffer(GL_ARRAY_BUFFER,0)
+    VBO_cube = creatVBO()
 
 
-    glBindBuffer(GL_ARRAY_BUFFER, COLORid)
-    glBufferData(GL_ARRAY_BUFFER, len(colorp), colorp, GL_STATIC_DRAW)
-    glBindBuffer(GL_ARRAY_BUFFER, 0)
+
     DestTex=[load_texture("block/destroy_0.png"),
              load_texture("block/destroy_1.png"),
              load_texture("block/destroy_2.png"),
@@ -249,24 +260,16 @@ class Block:
 
     def VBOdraw(self):
         global VBOid,COLORid
-        glBindBuffer(GL_ARRAY_BUFFER,VBOid)
-        glVertexPointer(2,GL_FLOAT,0,None)
-        glBindBuffer(GL_ARRAY_BUFFER,0)
-
-        glBindBuffer(GL_ARRAY_BUFFER, COLORid)
-        glColorPointer(3, GL_FLOAT, 0, None)
-        glBindBuffer(GL_ARRAY_BUFFER,0)
-
-
-
-
-        glVertexPointer(2, GL_FLOAT, 0, None)
         glEnableClientState(GL_VERTEX_ARRAY)
-        glEnableClientState(GL_COLOR_ARRAY)
-        glDrawArrays(GL_TRIANGLES, 0, 3)
+        glBindBuffer(GL_ARRAY_BUFFER,VBOid)
+        glVertexPointer(3,GL_FLOAT,0,None)
+        glPushMatrix()
+        glColor3f(1,0.3,1)
+        glTranslatef(self.x,self.y,self.z)
+        glDrawArrays(GL_TRIANGLES,0,6)
+        glPopMatrix()
+        glBindBuffer(GL_ARRAY_BUFFER,0)
         glDisableClientState(GL_VERTEX_ARRAY)
-        glDisableClientState(GL_COLOR_ARRAY)
-
 
 
 
