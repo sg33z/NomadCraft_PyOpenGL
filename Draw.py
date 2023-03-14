@@ -67,7 +67,7 @@ def DrawMAP(mask, w,h):
     #model.render()
 
     #Blocks[5,5,5].SetHave(1, True)
-    Blocks[5, 1, 5].VBOdraw()
+    Blocks[5, 1, 5].VBOdraw(True,Blocks)
 
 
     glPopMatrix()
