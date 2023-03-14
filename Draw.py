@@ -9,10 +9,10 @@ vision = [0,0,0]
 
 CubeMap = [-1,-1,1,  1,-1,1,  1,1,1,  -1,1,1]
 CubeVBO =None
-Blocks = np.empty((101,101,101),dtype=Block)
-for x in range(101):
-    for y in range(101):
-        for z in range(101):
+Blocks = np.empty((11,11,11),dtype=Block)
+for x in range(11):
+    for y in range(11):
+        for z in range(11):
             Blocks[x, y, z] = Block(0, x, y, z)
 
 def BlockStart():
@@ -22,11 +22,11 @@ def BlockStart():
     glBufferData(GL_ARRAY_BUFFER, len(CubeMap) * 4, (GLfloat * len(CubeMap))(*CubeMap), GL_STATIC_DRAW)
     glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-    for x in range(100):
-        for y in range(100):
+    for x in range(10):
+        for y in range(10):
             Blocks[x,y,0].SetHave(2,True)
-    for x in range(100):
-        for z in range(100):
+    for x in range(10):
+        for z in range(10):
             Blocks[x,0,z].SetHave(0,True)
     from Items import DropItem
     global woodBlock
@@ -34,7 +34,7 @@ def BlockStart():
 
 
 def DrawMAP(mask, w,h):
-    from Init_Window import  True_Projection, AllFarSet
+    from Init_Window import  True_Projection
     True_Projection(w, h)
 
     if mask:
@@ -46,17 +46,16 @@ def DrawMAP(mask, w,h):
     from Controls import MoveCam
     glPushMatrix()
     MoveCam()
-    from Controls import CamPos
-    i,j,k= CamPos
-    for x in range(int(i-AllFarSet),int(AllFarSet+i)):
-        for y in range(int(j-AllFarSet),int(AllFarSet+j)):
-            for z in range(int(k-AllFarSet),int(AllFarSet+k)):
+
+    for x in range(10):
+        for y in range(10):
+            for z in range(10):
                 if not Blocks[x,y,z].Clear:
                     Blocks[x,y,z].draw(mask,Blocks)
 
-    for x in range(int(i - AllFarSet), int(AllFarSet + i)):
-        for y in range(int(j - AllFarSet), int(AllFarSet + j)):
-            for z in range(int(k - AllFarSet), int(AllFarSet + k)):
+    for x in range(10):
+        for y in range(10):
+            for z in range(10):
                 if Blocks[x,y,z].Clear:
                     Blocks[x,y,z].draw(mask,Blocks)
 

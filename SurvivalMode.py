@@ -61,6 +61,14 @@ def OnKeyUp(key):
 
 
 def MouseClick(window, button, action, mods):
+    if button == glfw.MOUSE_BUTTON_MIDDLE and action == glfw.PRESS:
+        bPos = BlockUnCheck(window)
+        import HUD
+        if bPos is not None:
+            x, y, z, s = bPos
+            HUD.SetFromHudId = Draw.Blocks[x,y,z].ID
+            print(Draw.Blocks[x,y,z].ID)
+
     if button == glfw.MOUSE_BUTTON_RIGHT and action==glfw.PRESS:
         bPos = BlockUnCheck(window)
         print(bPos)
