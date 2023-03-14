@@ -6,13 +6,13 @@ def OnResize(window, width, height):
 
 global width, height
 keyboard_listener = None
-
+AllFarSet = 10
 def True_Projection(w,h):
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     k = w / h
     sz = 0.1
-    glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 80)
+    glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, AllFarSet+5)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     glEnable(GL_DEPTH_TEST)
@@ -34,7 +34,7 @@ def Create_Window():
     width, height = glfw.get_window_size(window)
     k = width / height
     sz = 0.1
-    glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 80)
+    glFrustum(-k * sz, k * sz, -sz, sz, sz * 2, 10)
 
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_CULL_FACE)

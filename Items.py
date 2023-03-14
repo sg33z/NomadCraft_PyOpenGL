@@ -73,6 +73,13 @@ TopTexCoord = np.array([
     1, 0
 ], dtype=np.float32)
 
+BottomTexCoord = np.array([
+    0, 0,
+    1, 0,
+    1, 1,
+    0, 1
+], dtype=np.float32)
+
 RightTexCoord = np.array([
     0, 0,
     0, 1,
@@ -150,7 +157,7 @@ def InitItems():
     glBindBuffer(GL_ARRAY_BUFFER, vboTex[2])
     glBufferData(GL_ARRAY_BUFFER, TopTexCoord.nbytes, TopTexCoord, GL_STATIC_DRAW)
     glBindBuffer(GL_ARRAY_BUFFER, vboTex[3])
-    glBufferData(GL_ARRAY_BUFFER, TopTexCoord.nbytes, TopTexCoord, GL_STATIC_DRAW)
+    glBufferData(GL_ARRAY_BUFFER, BottomTexCoord.nbytes, BottomTexCoord, GL_STATIC_DRAW)
     glBindBuffer(GL_ARRAY_BUFFER, vboTex[4])
     glBufferData(GL_ARRAY_BUFFER, RightTexCoord.nbytes, RightTexCoord, GL_STATIC_DRAW)
     glBindBuffer(GL_ARRAY_BUFFER, vboTex[5])
@@ -350,236 +357,53 @@ class Block:
         glPopMatrix()
         glDisable(GL_TEXTURE_2D)
 
-    def VBOdraw(self,mask,obj):
-        global vbo, vbotex
-        size =0.5
-        #NN
-        glEnableClientState(GL_VERTEX_ARRAY)
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY)
-
-        if mask:
-            glEnable(GL_TEXTURE_2D)
-            glBindTexture(GL_TEXTURE_2D, tex[3])
-
-        side = self.Optimization(obj)
-        # Задать положение блока
-        glPushMatrix()
-        glTranslatef(self.x, self.y, self.z)
-        glScalef(size, size, size)
-        for i in range(6):
-            if side[i]:
-                if mask:
-                    glBindBuffer(GL_ARRAY_BUFFER, vboTex[i])
-                    glTexCoordPointer(2, GL_FLOAT, 0, None)
-                glBindBuffer(GL_ARRAY_BUFFER, vbo[i])
-                glVertexPointer(3, GL_FLOAT, 0, None)
-                glDrawArrays(GL_QUADS, 0, 4)
-
-
-        glDisableClientState(GL_VERTEX_ARRAY)
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY)
-        glDisable(GL_TEXTURE_2D)
-        glPopMatrix()
-
-
-
-
-
-
-    def draw(self, mask, obj):
-        global tex, DestTex
+    def draw(self,mask,obj):
         if self.have:
             if self.ID > 100:
                 self.tex = tex[self.ID-100]
                 self.Clear = True
             else:
                 self.tex = tex[self.ID]
+
+
+            global vbo, vbotex
             size = 0.5
+            # NN
+            glEnableClientState(GL_VERTEX_ARRAY)
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+
             if mask:
-                glColor3f(1, 1, 1)
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 glEnable(GL_BLEND)
                 glEnable(GL_TEXTURE_2D)
                 glBindTexture(GL_TEXTURE_2D, self.tex)
-
-
+                glColor3f(1, 1, 1)
             side = self.Optimization(obj)
-
+            # Задать положение блока
             glPushMatrix()
             glTranslatef(self.x, self.y, self.z)
             glScalef(size, size, size)
-            # Отрисовка блока
-            glBegin(GL_QUADS)
-            if side[0]:
-                if mask:
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, -1, 1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(1, -1, 1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, 1, 1)
-                    glTexCoord2f(1, 0)
-                    glVertex3f(-1, 1, 1)
-                else:
-                    glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 0)
-                    glVertex3f(-1, -1, 1)
-                    glVertex3f(1, -1, 1)
-                    glVertex3f(1, 1, 1)
-                    glVertex3f(-1, 1, 1)
+            for i in range(6):
+                if side[i]:
+                    if mask:
+                        glBindBuffer(GL_ARRAY_BUFFER, vboTex[i])
+                        glTexCoordPointer(2, GL_FLOAT, 0, None)
+                    else:
+                        glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - i)
 
-            # Зад
-            if side[1]:
-                if mask:
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, 1, -1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(1, 1, -1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, -1, -1)
-                    glTexCoord2f(1, 0)
-                    glVertex3f(-1, -1, -1)
-                else:
-                    glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 1)
-                    glVertex3f(-1, 1, -1)
-                    glVertex3f(1, 1, -1)
-                    glVertex3f(1, -1, -1)
-                    glVertex3f(-1, -1, -1)
+                    glBindBuffer(GL_ARRAY_BUFFER, vbo[i])
+                    glVertexPointer(3, GL_FLOAT, 0, None)
+                    glDrawArrays(GL_QUADS, 0, 4)
 
-            # Верх
-            if side[2]:
-                if mask:
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, 1, -1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(-1, 1, 1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, 1, 1)
-                    glTexCoord2f(1, 0)
-                    glVertex3f(1, 1, -1)
-                else:
-                    glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 2)
-                    glVertex3f(-1, 1, -1)
-                    glVertex3f(-1, 1, 1)
-                    glVertex3f(1, 1, 1)
-                    glVertex3f(1, 1, -1)
 
-            # Низ
-            if side[3]:
-                if mask:
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, -1, -1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(1, -1, -1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, -1, 1)
-                    glTexCoord2f(1, 0)
-                    glVertex3f(-1, -1, 1)
-                else:
-                    glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 3)
-                    glVertex3f(-1, -1, -1)
-                    glVertex3f(1, -1, -1)
-                    glVertex3f(1, -1, 1)
-                    glVertex3f(-1, -1, 1)
-
-            # право
-            if side[4]:
-                if mask:
-                    glTexCoord2f(1, 0)
-                    glVertex3f(1, 1, 1)
-                    glTexCoord2f(1, 1)
-                    glVertex3f(1, -1, 1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(1, -1, -1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, 1, -1)
-                else:
-                    glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 4)
-                    glVertex3f(1, 1, 1)
-                    glVertex3f(1, -1, 1)
-                    glVertex3f(1, -1, -1)
-                    glVertex3f(1, 1, -1)
-
-            # Лево
-            if side[5]:
-                if mask:
-                    glTexCoord2f(1, 0)
-                    glVertex3f(-1, 1, -1)
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, -1, -1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(-1, -1, 1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(-1, 1, 1)
-                else:
-                    glColor4ub(255 - self.x, 255 - self.y, 255 - self.z, 255 - 5)
-                    glVertex3f(-1, 1, -1)
-                    glVertex3f(-1, -1, -1)
-                    glVertex3f(-1, -1, 1)
-                    glVertex3f(-1, 1, 1)
-            glEnd()
-
-            glBindTexture(GL_TEXTURE_2D, tex[3])
-            glBegin(GL_QUADS)
-            if mask:
-                if side[0]:
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, -1, 1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(1, -1, 1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, 1, 1)
-                    glTexCoord2f(1, 0)
-                    glVertex3f(-1, 1, 1)
-                if side[1]:
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, 1, -1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(1, 1, -1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, -1, -1)
-                    glTexCoord2f(1, 0)
-                    glVertex3f(-1, -1, -1)
-                if side[2]:
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, 1, -1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(-1, 1, 1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, 1, 1)
-                    glTexCoord2f(1, 0)
-                    glVertex3f(1, 1, -1)
-                if side[3]:
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, -1, -1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(1, -1, -1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, -1, 1)
-                    glTexCoord2f(1, 0)
-                    glVertex3f(-1, -1, 1)
-                if side[4]:
-                    glTexCoord2f(1, 0)
-                    glVertex3f(1, 1, 1)
-                    glTexCoord2f(1, 1)
-                    glVertex3f(1, -1, 1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(1, -1, -1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(1, 1, -1)
-                if side[5]:
-                    glTexCoord2f(1, 0)
-                    glVertex3f(-1, 1, -1)
-                    glTexCoord2f(1, 1)
-                    glVertex3f(-1, -1, -1)
-                    glTexCoord2f(0, 1)
-                    glVertex3f(-1, -1, 1)
-                    glTexCoord2f(0, 0)
-                    glVertex3f(-1, 1, 1)
-
-            glEnd()
-            glPopMatrix()
+            glDisableClientState(GL_VERTEX_ARRAY)
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY)
             glDisable(GL_TEXTURE_2D)
+            glPopMatrix()
             glDisable(GL_BLEND)
+
+
+
 
 
 

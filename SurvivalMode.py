@@ -24,13 +24,13 @@ jp = None
 Mask = True
 def OnKeyDown(key):
     global GoGo, Jump, jp,CamPos
-    if key == keyboard.KeyCode.from_char('w') == key:
+    if key == keyboard.KeyCode.from_char('w') or key == keyboard.KeyCode.from_char('ц'):
         GoGo[0] = True
-    if key == keyboard.KeyCode.from_char('a') == key:
+    if key == keyboard.KeyCode.from_char('a') or key == keyboard.KeyCode.from_char('ф'):
         GoGo[1] = True
-    if key == keyboard.KeyCode.from_char('s') == key:
+    if key == keyboard.KeyCode.from_char('s') or key == keyboard.KeyCode.from_char('ы'):
         GoGo[2] = True
-    if key == keyboard.KeyCode.from_char('d') == key:
+    if key == keyboard.KeyCode.from_char('d') or key == keyboard.KeyCode.from_char('в'):
         GoGo[3] = True
     if key == keyboard.Key.space == key:
         if not Jump and Draw.Blocks[int(CamPos[0] + 0.5), int(CamPos[1] - 1), int(CamPos[2] + 0.5)].have:
@@ -50,13 +50,13 @@ def onJump():
 
 def OnKeyUp(key):
     global GoGo
-    if key == keyboard.KeyCode.from_char('w') == key:
+    if key == keyboard.KeyCode.from_char('w') == key or key == keyboard.KeyCode.from_char('ц'):
         GoGo[0] = False
-    if key == keyboard.KeyCode.from_char('a') == key:
+    if key == keyboard.KeyCode.from_char('a') == key or key == keyboard.KeyCode.from_char('ф'):
         GoGo[1] = False
-    if key == keyboard.KeyCode.from_char('s') == key:
+    if key == keyboard.KeyCode.from_char('s') == key or key == keyboard.KeyCode.from_char('ы'):
         GoGo[2] = False
-    if key == keyboard.KeyCode.from_char('d') == key:
+    if key == keyboard.KeyCode.from_char('d') == key or key == keyboard.KeyCode.from_char('в'):
         GoGo[3] = False
 
 
@@ -69,7 +69,7 @@ def MouseClick(window, button, action, mods):
 
             x, y, z,s = bPos
             import HUD
-            if x < 11 and y < 11 and z < 11:
+            if x < Draw.Blocks.nbytes/3 and y < Draw.Blocks.nbytes/3 and z < Draw.Blocks.nbytes/3:
                 if s == 2:
                     Draw.Blocks[x, y+1, z].SetHave(HUD.SetFromHudId,True )
                 elif s == 3:

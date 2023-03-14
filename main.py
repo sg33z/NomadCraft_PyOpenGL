@@ -1,4 +1,4 @@
-from Init_Window import Create_Window,Delete_Window
+from Init_Window import Create_Window,Delete_Window,FPS_count
 import glfw
 
 
@@ -18,7 +18,7 @@ while not glfw.window_should_close(window):
     DrawMAP(True,w,h)
     HUD_Show(window)
     #Счет ФПС
-    #FPS_count()
+    FPS_count()
 
 
     #Смена буферов(переход к следующему файлу)
